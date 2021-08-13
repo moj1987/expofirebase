@@ -179,7 +179,6 @@ function DetailsScreen({ navigation }) {
             mode={'contained'}
             onPress={form.handleSubmit((data) => {
               console.log('form data', data);
-              const timestamp = firebase.firestore.FieldValue.serverTimestamp();
               const entityID = new Date().toISOString().replace(".", "_");
               firebase.database().ref('meals/' + entityID).set(data)
                 .then(_doc => {
