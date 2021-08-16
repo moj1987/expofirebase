@@ -54,6 +54,9 @@ export default function App() {
             <>
               <Stack.Screen name="Login" component={LoginScreen} />
               <Stack.Screen name="Registration" component={RegistrationScreen} />
+              <Stack.Screen name="Home" options={{headerShown:false}}>
+              {props => <HomeScreen {...props} extraData={user} />}
+            </Stack.Screen>
             </>
           )}
         </Stack.Navigator>

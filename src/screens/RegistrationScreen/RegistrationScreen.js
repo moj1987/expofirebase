@@ -29,12 +29,9 @@ export default function RegistrationScreen({navigation}) {
                     email,
                     fullName,
                 };
-                const usersRef = firebase.firestore().collection('users')
-                usersRef
-                    .doc(uid)
-                    .set(data)
-                    .then(() => {
-                        navigation.navigate('Home', {user: data})
+                firebase.database().ref('meals/users/' + uid).set(data)
+                    .then((data) => {
+                        navigation.replace('Home', {data})
                     })
                     .catch((error) => {
                         alert(error)

@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { firebase } from '../../firebase/config'
 
-function HomeScreen2({ navigation }) {
+function HomeScreen({ navigation }) {
 
   const [entities, setEntities] = useState([])
 
@@ -179,7 +179,6 @@ function DetailsScreen({ navigation }) {
             mode={'contained'}
             onPress={form.handleSubmit((data) => {
               console.log('form data', data);
-              const timestamp = firebase.firestore.FieldValue.serverTimestamp();
               const entityID = new Date().toISOString().replace(".", "_");
               firebase.database().ref('meals/' + entityID).set(data)
                 .then(_doc => {
@@ -200,13 +199,13 @@ function DetailsScreen({ navigation }) {
 
 const Stack = createStackNavigator();
 
-function HomeScreen() {
+export default function(){
   return (
     <Stack.Navigator initialRouteName="Home">
-      <Stack.Screen name="Home" component={HomeScreen2} />
+      <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Details" component={DetailsScreen} />
     </Stack.Navigator>
   );
 }
 
-export default HomeScreen;
+ 
