@@ -24,10 +24,10 @@ function HomeScreen({ navigation }) {
           oEntity.id = key;
           aNewEntities.push(oEntity)
         });
-        setEntities(aNewEntities)
       } catch (e) {
         console.log(e.toString())
       }
+      setEntities(aNewEntities)
     },
       error => {
         console.log(error)
@@ -45,7 +45,10 @@ function HomeScreen({ navigation }) {
           </Card.Content>
           <Card.Cover source={{ uri: item.featured_image }} />
           <Card.Actions>
-            <Button>Edit</Button>
+            <Button onPress={() => navigation.navigate('Details', {item})}>Edit</Button>
+            <Button onPress={() => {
+              if(item.id) firebase.database().ref('meals/' + item.id).remove();
+            }}>Delete</Button>
           </Card.Actions>
         </Card>
       </View>
@@ -75,13 +78,21 @@ function HomeScreen({ navigation }) {
   )
 }
 
-function DetailsScreen({ navigation }) {
+function DetailsScreen({ route, navigation }) {
 
+  let item={}
+  try{
+    item = route.params.item;
+  }catch(e){
+    console.log(e.message);
+  }
+  console.log(item);
   const form = useForm({
     defaultValues: {
-      email: '',
-
-      password: '',
+      title: item.title,
+      meta_description: item.meta_description,
+      full_description: item.full_description,
+      featured_image: item.featured_image
     },
 
     mode: 'onChange',
@@ -179,15 +190,20 @@ function DetailsScreen({ navigation }) {
             mode={'contained'}
             onPress={form.handleSubmit((data) => {
               console.log('form data', data);
-              const entityID = new Date().toISOString().replace(".", "_");
-              firebase.database().ref('meals/' + entityID).set(data)
-                .then(_doc => {
-                  Keyboard.dismiss();
-                  navigation.popToTop();
-                })
-                .catch((error) => {
-                  alert(error)
-                });
+              let entityID = new Date().toISOString().replace(".", "_");
+              try{
+                if(item.id) entityID = item.id;
+                firebase.database().ref('meals/' + entityID).set(data)
+                  .then(_doc => {
+                    Keyboard.dismiss();
+                    navigation.popToTop();
+                  })
+                  .catch((error) => {
+                    alert(error)
+                  });
+              }catch(e){
+                console.log(e.message);
+              }
 
             })}>
             Submit
