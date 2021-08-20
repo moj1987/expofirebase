@@ -23,19 +23,8 @@ export default function RegistrationScreen({navigation}) {
             .auth()
             .createUserWithEmailAndPassword(email, password)
             .then((response) => {
-                const uid = response.user.uid
-                const data = {
-                    id: uid,
-                    email,
-                    fullName,
-                };
-                firebase.database().ref('meals/users/' + uid).set(data)
-                    .then((data) => {
-                        navigation.replace('Home', {data})
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    });
+                const user = response.user;
+                navigation.replace('Home', {user});
             })
             .catch((error) => {
                 alert(error)

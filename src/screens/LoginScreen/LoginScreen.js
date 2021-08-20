@@ -17,19 +17,8 @@ export default function LoginScreen({ navigation }) {
             .auth()
             .signInWithEmailAndPassword(email, password)
             .then((response) => {
-                const uid = response.user.uid
-                firebase.database().ref('meals/users/' + uid).get()
-                .then(snapshot => {
-                    if (!snapshot.exists()) {
-                        alert("User does not exist anymore.")
-                        return;
-                    }
-                    const user = snapshot.val();
-                    navigation.replace('Home', { user })
-                })
-                .catch(error => {
-                    alert(error)
-                });
+                const user = response.user;
+                navigation.replace('Home', { user })
             })
             .catch(error => {
                 alert(error)
