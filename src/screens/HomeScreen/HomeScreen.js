@@ -108,7 +108,7 @@ function DetailsScreen({ route, navigation }) {
       full_description: item.full_description,
       featured_image: item.featured_image,
       ///////////////////////////////
-      location: item.locations,
+      location: item.location,
       cost: item.cost,
       date: item.date,
       //////////////////////////////
