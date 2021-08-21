@@ -1,39 +1,42 @@
-import React, { useEffect, useState } from 'react'
-import { FlatList, Keyboard, Text, ScrollView, View } from 'react-native'
-import styles from './styles';
-import { FAB } from 'react-native-paper';
-import { createStackNavigator } from '@react-navigation/stack';
-import FormBuilder from 'react-native-paper-form-builder';
-import { useForm } from 'react-hook-form';
-import { Button, Card, Title, Paragraph } from 'react-native-paper';
-import { firebase } from '../../firebase/config'
+import React, { useEffect, useState } from "react";
+import { FlatList, Keyboard, Text, ScrollView, View } from "react-native";
+import styles from "./styles";
+import { FAB } from "react-native-paper";
+import { createStackNavigator } from "@react-navigation/stack";
+import FormBuilder from "react-native-paper-form-builder";
+import { useForm } from "react-hook-form";
+import { Button, Card, Title, Paragraph } from "react-native-paper";
+import { firebase } from "../../firebase/config";
 
 function HomeScreen({ navigation }) {
-
-  const [entities, setEntities] = useState([])
+  const [entities, setEntities] = useState([]);
 
   useEffect(() => {
-    firebase.database().ref('meals/').on("value", querySnapshot => {
-
-      const aNewEntities = []
-      let oEntities = querySnapshot.val();
-      try {
-        Object.keys(oEntities).map((key) => {
-          const oEntity = oEntities[key];
-          console.log(oEntity);
-          oEntity.id = key;
-          aNewEntities.push(oEntity)
-        });
-      } catch (e) {
-        console.log(e.toString())
-      }
-      setEntities(aNewEntities)
-    },
-      error => {
-        console.log(error)
-      }
-    )
-  }, [])
+    firebase
+      .database()
+      .ref("meals/")
+      .on(
+        "value",
+        (querySnapshot) => {
+          const aNewEntities = [];
+          let oEntities = querySnapshot.val();
+          try {
+            Object.keys(oEntities).map((key) => {
+              const oEntity = oEntities[key];
+              console.log(oEntity);
+              oEntity.id = key;
+              aNewEntities.push(oEntity);
+            });
+          } catch (e) {
+            console.log(e.toString());
+          }
+          setEntities(aNewEntities);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }, []);
 
   const renderEntity = ({ item, index }) => {
     return (
@@ -44,20 +47,33 @@ function HomeScreen({ navigation }) {
             <Paragraph>{item.full_description}</Paragraph>
           </Card.Content>
           <Card.Cover source={{ uri: item.featured_image }} />
+          <Paragraph>{item.location}</Paragraph>
+          <Paragraph>{item.cost}</Paragraph>
+          <Paragraph>{item.date}</Paragraph>
           <Card.Actions>
-            <Button onPress={() => navigation.navigate('Details', {item})}>Edit</Button>
-            <Button onPress={() => {
-              if(item.id) firebase.database().ref('meals/' + item.id).remove();
-            }}>Delete</Button>
+            <Button onPress={() => navigation.navigate("Details", { item })}>
+              Edit
+            </Button>
+            <Button
+              onPress={() => {
+                if (item.id)
+                  firebase
+                    .database()
+                    .ref("meals/" + item.id)
+                    .remove();
+              }}
+            >
+              Delete
+            </Button>
           </Card.Actions>
         </Card>
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <View style={styles.container}>
-      { entities && (
+      {entities && (
         <View style={styles.listContainer}>
           <FlatList
             data={entities}
@@ -71,19 +87,17 @@ function HomeScreen({ navigation }) {
         style={styles.fab}
         large
         icon="plus"
-        onPress={() => navigation.navigate('Details')}
+        onPress={() => navigation.navigate("Details")}
       />
-
     </View>
-  )
+  );
 }
 
 function DetailsScreen({ route, navigation }) {
-
-  let item={}
-  try{
+  let item = {};
+  try {
     item = route.params.item;
-  }catch(e){
+  } catch (e) {
     console.log(e.message);
   }
   console.log(item);
@@ -92,12 +106,16 @@ function DetailsScreen({ route, navigation }) {
       title: item.title,
       meta_description: item.meta_description,
       full_description: item.full_description,
-      featured_image: item.featured_image
+      featured_image: item.featured_image,
+      ///////////////////////////////
+      location: item.locations,
+      cost: item.cost,
+      date: item.date,
+      //////////////////////////////
     },
 
-    mode: 'onChange',
+    mode: "onChange",
   });
-
 
   return (
     <View style={styles.containerStyle}>
@@ -108,33 +126,39 @@ function DetailsScreen({ route, navigation }) {
           form={form}
           formConfigArray={[
             {
-              type: 'input',
+              type: "input",
 
-              name: 'title',
+              name: "title",
 
-              label: 'Title',
+              label: "Title",
+
+              location: "Location",
+
+              cost: "Cost",
+
+              date: "Date",
 
               rules: {
                 required: {
                   value: true,
 
-                  message: 'Title is required',
+                  message: "Title is required",
                 },
               },
 
               textInputProps: {
-                keyboardType: 'default',
+                keyboardType: "default",
 
-                autoCapitalize: 'none',
+                autoCapitalize: "none",
               },
             },
 
             {
-              type: 'input',
+              type: "input",
 
-              name: 'meta_description',
+              name: "meta_description",
 
-              label: 'Meta Description',
+              label: "Meta Description",
 
               rules: {
                 required: {
@@ -144,15 +168,15 @@ function DetailsScreen({ route, navigation }) {
 
               textInputProps: {
                 multiline: true,
-                numberOfLines: 4
+                numberOfLines: 4,
               },
             },
             {
-              type: 'input',
+              type: "input",
 
-              name: 'full_description',
+              name: "full_description",
 
-              label: 'Full Description',
+              label: "Full Description",
 
               rules: {
                 required: {
@@ -162,15 +186,15 @@ function DetailsScreen({ route, navigation }) {
 
               textInputProps: {
                 multiline: true,
-                numberOfLines: 4
+                numberOfLines: 4,
               },
             },
             {
-              type: 'input',
+              type: "input",
 
-              name: 'featured_image',
+              name: "featured_image",
 
-              label: 'Featured Image',
+              label: "Featured Image",
 
               rules: {
                 required: {
@@ -179,43 +203,106 @@ function DetailsScreen({ route, navigation }) {
               },
 
               textInputProps: {
-                keyboardType: 'default',
+                keyboardType: "default",
 
-                autoCapitalize: 'none',
+                autoCapitalize: "none",
               },
             },
+            ///////////////////////////////////////////
+            {
+              type: "input",
 
-          ]}>
+              name: "location",
+
+              label: "Location",
+
+              rules: {
+                required: {
+                  value: false,
+                },
+              },
+
+              textInputProps: {
+                keyboardType: "default",
+
+                autoCapitalize: "none",
+              },
+            },
+            {
+              type: "input",
+
+              name: "cost",
+
+              label: "Cost",
+
+              rules: {
+                required: {
+                  value: false,
+                },
+              },
+
+              textInputProps: {
+                keyboardType: "default",
+
+                autoCapitalize: "none",
+              },
+            },
+            {
+              type: "input",
+
+              name: "date",
+
+              label: "Date",
+
+              rules: {
+                required: {
+                  value: false,
+                },
+              },
+
+              textInputProps: {
+                keyboardType: "default",
+
+                autoCapitalize: "none",
+              },
+            },
+            /////////////////////////////////////////////
+          ]}
+        >
           <Button
-            mode={'contained'}
+            mode={"contained"}
             onPress={form.handleSubmit((data) => {
-              console.log('form data', data);
+              console.log("form data", data);
               let entityID = new Date().toISOString().replace(".", "_");
-              try{
-                if(item.id) entityID = item.id;
-                firebase.database().ref('meals/' + entityID).set(data)
-                  .then(_doc => {
+              try {
+                if (item.id) entityID = item.id;
+                firebase
+                  .database()
+                  .ref("meals/" + entityID)
+                  .set(data)
+                  .then((_doc) => {
                     Keyboard.dismiss();
                     navigation.popToTop();
                   })
                   .catch((error) => {
-                    alert(error)
+                    alert(error);
                   });
-              }catch(e){
+              } catch (e) {
                 console.log(e.message);
               }
-
-            })}>
+            })}
+          >
             Submit
-            </Button>
+          </Button>
         </FormBuilder>
       </ScrollView>
-    </View>);
+    </View>
+  );
 }
 
 const Stack = createStackNavigator();
 
-export default function(){
+export default function () {
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="Home" component={HomeScreen} />
@@ -223,5 +310,3 @@ export default function(){
     </Stack.Navigator>
   );
 }
-
- 
